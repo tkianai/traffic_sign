@@ -171,7 +171,7 @@ data_root = 'data/TrafficSign/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 data = dict(
-    imgs_per_gpu=4,
+    imgs_per_gpu=1,
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
@@ -230,6 +230,6 @@ total_epochs = 20
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = './work_dirs/traffic_cascade_mask_rcnn_dconv_c3-c5_x101_64x4d_fpn_20e'
-load_from = './work_dirs/pretrained/cascade_mask_rcnn_x101_64x4d_coco_for_trafficSign.pth'
+load_from = './work_dirs/pretrained/traffic_cascade_mask_rcnn_x101_64x4d_fpn_20e_20181218-630773a7.pth'
 resume_from = None
 workflow = [('train', 1)]

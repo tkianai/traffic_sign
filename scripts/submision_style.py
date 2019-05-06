@@ -65,7 +65,7 @@ class StyleTrans(object):
         if not os.path.exists(dir_):
             os.makedirs(dir_)
         
-        results = json.load(open(args.dt_file))
+        results = json.load(open(self.dt_file))
         for itm in tqdm(results):
             _mask = maskUtils.decode(itm['segmentation']).astype(np.bool)
             _polygons = maskToPolygon(_mask).polygons()

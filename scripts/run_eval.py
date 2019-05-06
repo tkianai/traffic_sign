@@ -24,12 +24,20 @@ def parse_args():
     return args
 
 def run(args):
-
-    # evaluate the original detection performance
-    eval_ts = TrafficSignEval(args.dt_file, args.gt_file)
-    eval_ts.eval_map(mode='segm')
-    eval_ts.eval_F_Score(threshold=0.9, mode='segm')
-    eval_ts.save_pr_curve(save_name='work_dirs/conlusions/P_R_curve.png')
+    # choose the best score threshold
+    anns = json.load(open(args.gt_file))
+    eval_flag = False
+    thr = args.score_thr
+    if len(anns['annotations']) != 0:
+        thr = eval_ts.results['Score']
+        eval_flag = True
+    
+    if eval_flag:
+        # evaluate the original detection performance
+        eval_ts = TrafficSignEval(args.dt_file, args.gt_file)
+        eval_ts.eval_map(mode='segm')
+        eval_ts.eval_F_Score(threshold=0.9, mode='segm')
+        eval_ts.save_pr_curve(save_name='work_dirs/conlusions/P_R_curve.png')
 
     # transfer mask results to polygons
     st = StyleTrans(args.dt_file, args.gt_file, args.pn_file)
@@ -37,18 +45,12 @@ def run(args):
         st.segm_to_polygons(save_name='work_dirs/conlusions/results_polygons.json')
         args.pn_file = 'work_dirs/conlusions/results_polygons.json'
     
-    # evaluate the detection performance after formatter
-    eval_ts = TrafficSignEval(args.pn_file, args.gt_file)
-    eval_ts.eval_map(mode='segm')
-    eval_ts.eval_F_Score(threshold=0.9, mode='segm')
-    eval_ts.save_pr_curve(save_name='work_dirs/conlusions/P_R_curve_formatter.png')
-
-    # choose the best score threshold
-    anns = json.load(open(args.gt_file))
-    if len(anns['annotations']) != 0:
-        thr = eval_ts.results['Score']
-    else:
-        thr = args.score_thr
+    if eval_flag:
+        # evaluate the detection performance after formatter
+        eval_ts = TrafficSignEval(args.pn_file, args.gt_file)
+        eval_ts.eval_map(mode='segm')
+        eval_ts.eval_F_Score(threshold=0.9, mode='segm')
+        eval_ts.save_pr_curve(save_name='work_dirs/conlusions/P_R_curve_formatter.png')
 
     # save the submission results
     st.segm_to_csv(score_thr=thr, save_name='work_dirs/conlusions/predict.csv')

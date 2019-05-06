@@ -117,7 +117,7 @@ class StyleTrans(object):
             self.segm_to_polygons()
         
         img_id2name = {}
-        anns = json.load(open(args.gt_file))
+        anns = json.load(open(self.gt_file))
         for itm in anns['images']:
             img_id2name[itm['id']] = itm['file_name']
 
@@ -126,10 +126,9 @@ class StyleTrans(object):
         det_whole = {}
         # each element: [filename, X1, Y1, X2, Y2, X3, Y3, X4, Y4, type]
         for itm in tqdm(self.mid_out):
-            if itm['image_id'] in det_whole:
-                det_whole[itm['image_id']].append(itm)
-            else:
+            if itm['image_id'] not in det_whole:
                 det_whole[itm['image_id']] = []
+            det_whole[itm['image_id']].append(itm)
             if itm['score'] < score_thr:
                 continue
             csv_det_names.add(img_id2name[itm['image_id']])

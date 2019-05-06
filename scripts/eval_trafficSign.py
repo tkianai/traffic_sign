@@ -115,7 +115,7 @@ class TrafficSignEval(object):
         print('Maximum F-score: %f' % results['F_score'])
         print('  |-- Precision: %f' % results['Precision'])
         print('  |-- Recall   : %f' % results['Recall'])
-        print('  |-- Score    : %f' % results['score'])
+        print('  |-- Score    : %f' % results['Score'])
         print('------------------------------------------------ ')
 
 

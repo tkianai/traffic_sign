@@ -4,8 +4,8 @@
 import os
 import argparse
 import json
-from .eval_trafficSign import TrafficSignEval
-from .submision_style import StyleTrans
+from scripts.eval_trafficSign import TrafficSignEval
+from scripts.submision_style import StyleTrans
 
 
 def parse_args():
@@ -13,13 +13,14 @@ def parse_args():
     parser.add_argument('--dt-file', type=str, help="detection coco style results")
     parser.add_argument('--gt-file', type=str, help="annotations providing id -> image name information")
     parser.add_argument('--pn-file', type=str, default=None, help="middle file")
+    parser.add_argument('--score-thr', type=str, default=0.8, help="middle file")
+    args = parser.parse_args()
     if not os.path.exists(args.gt_file):
         print("File Not Found Error: {}".format(args.gt_file))
         exit(404)
     if not os.path.exists(args.dt_file):
         print("File Not Found Error: {}".format(args.dt_file))
         exit(404)
-    args = parser.parse_args()
     return args
 
 def run(args):
@@ -43,7 +44,11 @@ def run(args):
     eval_ts.save_pr_curve(save_name='work_dirs/conlusions/P_R_curve_formatter.png')
 
     # choose the best score threshold
-    thr = eval_ts.results['Score']
+    anns = json.load(open(args.gt_file))
+    if len(anns['annotations']) != 0:
+        thr = eval_ts.results['Score']
+    else:
+        thr = args.score_thr
 
     # save the submission results
     st.segm_to_csv(score_thr=thr, save_name='work_dirs/conlusions/predict.csv')

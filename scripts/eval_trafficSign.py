@@ -103,7 +103,7 @@ class TrafficSignEval(object):
             F_score=F_score[idx],
             Precision=Precision[idx],
             Recall=Recall[idx],
-            score=Scores[idx],
+            Score=Scores[idx],
         )
 
         self.precision = Precision

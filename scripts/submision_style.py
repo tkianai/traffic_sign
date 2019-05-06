@@ -123,8 +123,13 @@ class StyleTrans(object):
 
         csv_submit = []
         csv_det_names = set()
+        det_whole = {}
         # each element: [filename, X1, Y1, X2, Y2, X3, Y3, X4, Y4, type]
         for itm in tqdm(self.mid_out):
+            if itm['image_id'] in det_whole:
+                det_whole[itm['image_id']].append(itm)
+            else:
+                det_whole[itm['image_id']] = []
             if itm['score'] < score_thr:
                 continue
             csv_det_names.add(img_id2name[itm['image_id']])
@@ -144,12 +149,27 @@ class StyleTrans(object):
         for key, value in img_id2name.items():
             if value in csv_det_names:
                 continue
-            _counter += 1
             csv_row = []
             csv_row.append(value)
-            for i in range(9):
-                csv_row.append('0')
+            if key in det_whole:
+                # choose the highest score itm
+                score = -1
+                select_itm = None
+                for itm in det_whole[key]:
+                    if itm['score'] > score:
+                        select_itm = itm
+                for p in select_itm['segmentation'][0]:
+                    csv_row.append(str(int(p)))
+                _type = select_itm['category_id']
+                if _type == 21:
+                    _type = 0
+                csv_row.append(str(_type))
+            else:
+                _counter += 1
+                for i in range(9):
+                    csv_row.append('0')
             csv_submit.append(csv_row)
+        
         print("There are {} images have not been detected traffic signs.".format(_counter))
 
         with open(save_name, 'w') as w_obj:

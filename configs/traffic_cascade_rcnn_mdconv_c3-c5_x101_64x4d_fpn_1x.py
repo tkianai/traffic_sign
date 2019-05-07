@@ -14,6 +14,7 @@ model = dict(
         style='pytorch',
         dcn=dict(
             modulated=True,
+            groups=64,
             deformable_groups=1,
             fallback_on_stride=False),
         stage_with_dcn=(False, True, True, True)),

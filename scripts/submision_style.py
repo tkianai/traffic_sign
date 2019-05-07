@@ -138,8 +138,6 @@ class StyleTrans(object):
             for p in itm['segmentation'][0]:
                 csv_row.append(str(int(p)))
             _type = itm['category_id']
-            if _type == 21:
-                _type = 0
             csv_row.append(str(_type))
             csv_submit.append(csv_row)
         
@@ -160,8 +158,6 @@ class StyleTrans(object):
                 for p in select_itm['segmentation'][0]:
                     csv_row.append(str(int(p)))
                 _type = select_itm['category_id']
-                if _type == 21:
-                    _type = 0
                 csv_row.append(str(_type))
             else:
                 _counter += 1
@@ -178,7 +174,31 @@ class StyleTrans(object):
             csv_writer.writerows(csv_submit)
 
         print("Results has been saved to {}".format(save_name))
-            
+    
+    def bbox_to_polygons(self, save_name=None):
+        if save_name is None:
+            save_name = '.'.join(self.dt_file.split('.')[:-1]) + '_polygons.json'
+        dir_ = os.path.dirname(save_name)
+        if not os.path.exists(dir_):
+            os.makedirs(dir_)
+
+        results = json.load(open(self.dt_file))
+        for itm in tqdm(results):
+            bbox = itm['bbox']
+            polygons = [
+                bbox[0], bbox[1],
+                bbox[0] + bbox[2], bbox[1],
+                bbox[0] + bbox[2], bbox[1] + bbox[3],
+                bbox[0], bbox[1] + bbox[3]
+            ]
+            itm['segmentation'] = [polygons]
+
+        self.mid_out = results
+        with open(save_name, 'w') as w_obj:
+            json.dump(results, w_obj)
+
+        print("segm has changed to polygons with 4 points, and saved to {}".format(
+            save_name))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Format Transformation")

@@ -29,7 +29,6 @@ CATEGORIES = [
     {'id': 18, 'name': '限制速度40公里每小时'},
     {'id': 19, 'name': '限速30公里每小时'},
     {'id': 20, 'name': '鸣喇叭'},
-    {'id': 21, 'name': '其他'},  # origin label: 0
 ]
 
 def parse_args():
@@ -98,7 +97,7 @@ def add_annotations(coco_output, annotations, annotation_id, image_id):
         ann_info['id'] = annotation_id
         ann_info['image_id'] = image_id
         ann_info['segmentation'] = annotation['segmentation']
-        ann_info['category_id'] = annotation['type'] if annotation['type'] != 0 else 21
+        ann_info['category_id'] = annotation['type']
         ann_info['iscrowd'] = 0
         ann_info['bbox'] = annotation['bbox']
         ann_info['area'] = ann_info['bbox'][2] * ann_info['bbox'][3]

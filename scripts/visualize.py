@@ -40,7 +40,8 @@ def json_visualize(gt_file, dt_file, img_dir, save_dir, mode=None, VIS_N=100):
                     "bbox": [],
                     "category": [],
                 }
-            anns_bbox[file_name]['bbox'].append(itm['bbox'])
+            bbox = [int(p) for p in itm['bbox']]
+            anns_bbox[file_name]['bbox'].append(bbox)
             anns_bbox[file_name]['category'].append(itm['category_id'])
     
     results = json.load(open(dt_file))
@@ -53,7 +54,8 @@ def json_visualize(gt_file, dt_file, img_dir, save_dir, mode=None, VIS_N=100):
                 "score": [],
                 "category": [],
             }
-        dt_bbox[file_name]['bbox'].append(itm['bbox'])
+        bbox = [int(p) for p in itm['bbox']]
+        dt_bbox[file_name]['bbox'].append(bbox)
         dt_bbox[file_name]['score'].append(itm['score'])
         dt_bbox[file_name]['category'].append(itm['category_id'])
 

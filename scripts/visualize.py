@@ -122,7 +122,7 @@ def csv_visualize(csv_file, img_dir, save_dir, VIS_N=100):
         counter += 1
         # load image
         image = cv2.imread(os.path.join(img_dir, key))
-        for i, itm enumerate(value['bbox']):
+        for i, itm in enumerate(value['bbox']):
             image = cv2.rectangle(image, (itm[0], itm[1]), (itm[0] + itm[2], itm[1] + itm[3]), (0, 255, 0), 3)
             cv2.putText(image, "{}".format(itm['category'][i]), (itm[0], itm[1] - 5), cv2.FONT_HERSHEY_PLAIN, 2.0, (0, 255, 0), 2)
 

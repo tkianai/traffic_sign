@@ -20,7 +20,7 @@ def parse_args():
     if args.dt_file is None and args.csv is None:
         print("dt-file | csv should be provided at least one item.")
         exit(200)
-    if args.dt_file not None and args.gt_file is None:
+    if args.dt_file is not None and args.gt_file is None:
         print("Must provide gt-file to identify the image name from id.")
         exit(201)
     
@@ -61,7 +61,7 @@ def json_visualize(gt_file, dt_file, img_dir, save_dir, mode=None, VIS_N=100):
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     files = os.listdir(img_dir)
-    if mode not None:
+    if mode is not None:
         random.shuffle(files)
     for file in files[:VIS_N]:
         image = cv2.imread(os.path.join(img_dir, file))
@@ -72,7 +72,7 @@ def json_visualize(gt_file, dt_file, img_dir, save_dir, mode=None, VIS_N=100):
                 # score
                 cv2.putText(image, "{}: {}".format(dt_bbox[file]['category'][i], dt_bbox[file]['score'][i]), (itm[0], itm[1] - 5), cv2.FONT_HERSHEY_PLAIN, 2.0, (0, 255, 0), 2)
 
-        if anns_bbox not None:
+        if anns_bbox is not None:
             if file in anns_bbox:
                 for i, itm in enumerate(anns_bbox[file]['bbox']):
                     image = cv2.rectangle(image, (itm[0], itm[1]), (itm[0] + itm[2], itm[1] + itm[3]), (0, 0, 255), 3)
@@ -132,10 +132,10 @@ def csv_visualize(csv_file, img_dir, save_dir, VIS_N=100):
 
 def run_visualize(args):
 
-    if args.dt_file not None:
+    if args.dt_file is not None:
         json_visualize(args.gt_file, args.dt_file, args.img_dir, os.path.join(args.save_dir, 'json'))
     
-    if args.csv not None:
+    if args.csv is not None:
         csv_visualize(args.csv, args.img_dir, os.path.join(args.save_dir, 'csv'))
 
 if __name__ == "__main__":

@@ -62,7 +62,7 @@ def json_visualize(gt_file, dt_file, img_dir, save_dir, mode=None, VIS_N=100):
     # draw bbox
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
-    files = os.listdir(img_dir)
+    files = list(anns_bbox.keys())
     if mode is not None:
         random.shuffle(files)
     for file in files[:VIS_N]:
@@ -70,16 +70,16 @@ def json_visualize(gt_file, dt_file, img_dir, save_dir, mode=None, VIS_N=100):
         # draw detected box
         if file in dt_bbox:
             for i, itm in enumerate(dt_bbox[file]['bbox']):
-                image = cv2.rectangle(image, (itm[0], itm[1]), (itm[0] + itm[2], itm[1] + itm[3]), (0, 255, 0), 3)
+                image = cv2.rectangle(image, (itm[0], itm[1]), (itm[0] + itm[2], itm[1] + itm[3]), (0, 255, 0), 2)
                 # score
-                cv2.putText(image, "{}: {}".format(dt_bbox[file]['category'][i], dt_bbox[file]['score'][i]), (itm[0], itm[1] - 5), cv2.FONT_HERSHEY_PLAIN, 2.0, (0, 255, 0), 2)
+                cv2.putText(image, "{}: {.3f}".format(dt_bbox[file]['category'][i], dt_bbox[file]['score'][i]), (itm[0], itm[1] - 5), cv2.FONT_HERSHEY_PLAIN, 1.0, (0, 255, 0), 1)
 
         if anns_bbox is not None:
             if file in anns_bbox:
                 for i, itm in enumerate(anns_bbox[file]['bbox']):
-                    image = cv2.rectangle(image, (itm[0], itm[1]), (itm[0] + itm[2], itm[1] + itm[3]), (0, 0, 255), 3)
+                    image = cv2.rectangle(image, (itm[0], itm[1]), (itm[0] + itm[2], itm[1] + itm[3]), (0, 0, 255), 2)
                     cv2.putText(image, "{}".format(anns_bbox[file]['category'][i]), (
-                        itm[0], itm[1] - 5), cv2.FONT_HERSHEY_PLAIN, 2.0, (0, 255, 0), 2)
+                        itm[0], itm[1] - 10), cv2.FONT_HERSHEY_PLAIN, 1.0, (0, 255, 0), 1)
 
         # save file
         cv2.imwrite(os.path.join(save_dir, file), image)
@@ -117,19 +117,17 @@ def csv_visualize(csv_file, img_dir, save_dir, VIS_N=100):
 
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
-    counter = 0
-    for key, value in dt_bbox.items():
-        if counter > VIS_N:
-            break
-        counter += 1
+    files = list(dt_bbox.keys())
+    for file in files[:VIS_N]:
+        value = dt_bbox[file]
         # load image
-        image = cv2.imread(os.path.join(img_dir, key))
+        image = cv2.imread(os.path.join(img_dir, file))
         for i, itm in enumerate(value['bbox']):
-            image = cv2.rectangle(image, (itm[0], itm[1]), (itm[0] + itm[2], itm[1] + itm[3]), (0, 255, 0), 3)
-            cv2.putText(image, "{}".format(itm['category'][i]), (itm[0], itm[1] - 5), cv2.FONT_HERSHEY_PLAIN, 2.0, (0, 255, 0), 2)
+            image = cv2.rectangle(image, (itm[0], itm[1]), (itm[0] + itm[2], itm[1] + itm[3]), (0, 255, 0), 2)
+            cv2.putText(image, "{}".format(itm['category'][i]), (itm[0], itm[1] - 5), cv2.FONT_HERSHEY_PLAIN, 1.0, (0, 255, 0), 1)
 
         # save image
-        cv2.imwrite(os.path.join(save_dir, key), image)
+        cv2.imwrite(os.path.join(save_dir, file), image)
         
 
 def run_visualize(args):

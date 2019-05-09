@@ -72,14 +72,14 @@ def json_visualize(gt_file, dt_file, img_dir, save_dir, mode=None, VIS_N=100):
             for i, itm in enumerate(dt_bbox[file]['bbox']):
                 image = cv2.rectangle(image, (itm[0], itm[1]), (itm[0] + itm[2], itm[1] + itm[3]), (0, 255, 0), 2)
                 # score
-                cv2.putText(image, "{}: {.3f}".format(dt_bbox[file]['category'][i], dt_bbox[file]['score'][i]), (itm[0], itm[1] - 5), cv2.FONT_HERSHEY_PLAIN, 1.0, (0, 255, 0), 1)
+                cv2.putText(image, "{}: {:.3f}".format(dt_bbox[file]['category'][i], dt_bbox[file]['score'][i]), (itm[0], itm[1] - 5), cv2.FONT_HERSHEY_PLAIN, 1.0, (0, 255, 0), 1)
 
         if anns_bbox is not None:
             if file in anns_bbox:
                 for i, itm in enumerate(anns_bbox[file]['bbox']):
                     image = cv2.rectangle(image, (itm[0], itm[1]), (itm[0] + itm[2], itm[1] + itm[3]), (0, 0, 255), 2)
                     cv2.putText(image, "{}".format(anns_bbox[file]['category'][i]), (
-                        itm[0], itm[1] - 10), cv2.FONT_HERSHEY_PLAIN, 1.0, (0, 255, 0), 1)
+                        itm[0], itm[1] - 20), cv2.FONT_HERSHEY_PLAIN, 1.0, (0, 0, 255), 1)
 
         # save file
         cv2.imwrite(os.path.join(save_dir, file), image)

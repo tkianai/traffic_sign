@@ -41,9 +41,10 @@ def _merge_bboxes(id2name, name2id_up, ann_list):
     _out['image_id'] = name2id_up[filename_up]
     _out['segmentation'] = {}
     
-    # TODO:
     width = 1600
     height = 900
+    # make sure every splited image just has one detected bbox(highest score)
+    ann_scores = {}
     closest_id = -1
     offset_id = None
     closest_distance = -1
@@ -51,6 +52,10 @@ def _merge_bboxes(id2name, name2id_up, ann_list):
         filename = id2name[ann['image_id']]
         filename_idx = filename.split('_')[-1].split('.')[0]
         if filename_idx == "1":
+            continue
+        if filename not in ann_scores:
+            ann_scores[filename] = ann['score']
+        if ann['score'] < ann_scores[filename]:
             continue
         bbox_center_x = ann['bbox'][0] + ann['bbox'][2] // 2
         bbox_center_y = ann['bbox'][1] + ann['bbox'][3] // 2

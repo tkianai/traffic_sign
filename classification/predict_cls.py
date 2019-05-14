@@ -5,11 +5,16 @@ import os
 import cv2
 import json
 import argparse
+from collections import OrderedDict
 
 import torch
+import torch.nn as nn
 from torchvision.models import resnet101
 import torchvision.transforms as transforms
 from PIL import Image
+from tqdm import tqdm
+
+NUM_CLASSES = 20
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Classifying bounding boxes")
@@ -25,9 +30,18 @@ def parse_args():
 def classify(args):
     
     # model initialization
-    model = resnet101()
+    model = resnet101(pretrained=True)
+    num_ftrs = model.fc.in_features
+    model.fc = nn.Linear(num_ftrs, NUM_CLASSES)
     checkpoint = torch.load('classification/resnet101/model_best.pth.tar')
-    model.load_state_dict(checkpoint['state_dict'])
+    checkpoint = checkpoint['state_dict']
+
+    state_dict = OrderedDict()  # 创建一个没有module前缀新有序字典，然后加载它。
+    for k, v in checkpoint.items():
+        name = k[7:]                      # remove `module.`
+        state_dict[name] = v
+
+    model.load_state_dict(state_dict)
     model.cuda()
     model.eval()
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -39,13 +53,13 @@ def classify(args):
     ])
 
     ann_gt = json.load(open(args.gt_file))
-    id2name = {itm['id']:itm['file_name'] for itm in ann_gt['annotations']}
+    id2name = {itm['id']:itm['file_name'] for itm in ann_gt['images']}
     results = json.load(open(args.dt_file))
-    for itm in results:
+    for itm in tqdm(results):
         filename = id2name[itm['image_id']]
         img_path = os.path.join(args.img_dir, filename)
         if not os.path.exists(img_path):
-            raise FileNotFoundError, "{}".format(img_path)
+            raise FileNotFoundError
         image = cv2.imread(img_path)
         bbox = itm['bbox']
 
@@ -66,12 +80,13 @@ def classify(args):
 
         with torch.no_grad():
             image_roi = Image.fromarray(image_roi)
+            image_roi = val_transform(image_roi)
             image_roi = image_roi.unsqueeze(0).cuda()
             output = model(image_roi)
             output = output[0]
             _, idx = torch.max(output, 0)
             # category = idx + 1
-            itm['category_id'] = idx + 1
+            itm['category_id'] = idx.cpu().numpy().item() + 1
     
     with open(args.save, 'w') as w_obj:
         json.dump(results, w_obj)

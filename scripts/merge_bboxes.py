@@ -60,7 +60,7 @@ def _merge_bboxes(id2name, name2id_up, ann_list):
         bbox_center_x = ann['bbox'][0] + ann['bbox'][2] // 2
         bbox_center_y = ann['bbox'][1] + ann['bbox'][3] // 2
         distance_ = pow(bbox_center_x - width / 2, 2) + pow(bbox_center_y - height / 2, 2)
-        if distance_ < closest_distance or i == 0:
+        if distance_ < closest_distance or closest_distance == -1:
             closest_id  = i
             closest_distance = distance_
             offset_id = filename_idx
@@ -91,7 +91,7 @@ def _merge(dt_file, gt_file, gt_file_up, save_name='merged.json'):
     # process
     merged_dt = []
     for key, itms in dt_infos.items():
-        itms = _merge_bboxes(id2name, id2name_up, itms)
+        itms = _merge_bboxes(id2name, name2id_up, itms)
         if len(itms) != 0:
             merged_dt.append(itms)
 

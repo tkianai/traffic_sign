@@ -160,6 +160,7 @@ class StyleTrans(object):
                 _type = select_itm['category_id']
                 csv_row.append(str(_type))
             else:
+                print(key)
                 _counter += 1
                 for i in range(9):
                     csv_row.append('0')
